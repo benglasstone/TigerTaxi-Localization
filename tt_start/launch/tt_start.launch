@@ -4,24 +4,20 @@
     <!-- NOTE: TT_ROOT env varable must be set to TigerTaxi r-DCMAKE_BUILD_TYPE=release -DCATKIN_BLACKLIST_PACKAGES="safezone"oot directory -->
     <!-- NOTE: (building): catkin_make  -->
 
-    <arg name="simulate" default="false"/>
+    <arg name="simulate" default="true"/>
     <arg name="collect_map" default="true"/>
     <arg name="use_static_map" default="false"/>
-    <arg name="slam_pkg" default="loam"/>
-    <arg name="old_nav" default="false"/>
-    <arg name="use_safezone" default="true"/>
     <arg name="mapAddress" default="$(find tt_start)/maps/circle_jerk_map.bt"/>
     <arg name="rviz" default="true"/>
-    <arg name="rqt" default="true"/>
 
     <!-- Dependent on simulate (only true for simulation) -->
     <param name="/use_sim_time" value="$(arg simulate)"/>
 
     <!-- Simulation: Use Bag Files -->
     <group if="$(arg simulate)">
-        <!-- $(env TT_ROOT)/accel_ned.bag -->
-        <node pkg="rosbag" type="play" name="teabag" output="screen"
-        args="--clock --rate=1 --start=20 $(env TT_ROOT)/accel_ned.bag"/>
+      <!-- TT_ROOT is base of project repo -->
+      <node pkg="rosbag" type="play" name="teabag" output="screen"
+            args="--clock --rate=1 --start=20 $(env TT_ROOT)/accel_ned.bag"/>
     </group>
 
     <!-- GUI/Visualization Nodes -->
@@ -29,29 +25,16 @@
         <node pkg="rviz" type="rviz" name="rviz" args="-d $(find tt_start)/map_costmaps_and_plans.rviz" output="screen"/>
     </group>
 
-    <group if="$(arg rqt)">
-        <include file="$(find tt_start)/launch/gps_goal.launch"/>
-        <include file="$(find tt_gui)/launch/tt_gui.launch"/>
-        <node pkg="rqt_gui" type="rqt_gui" name="" args="--standalone tt_gui --lock-perspective --hide-title --clear-config"/>
-    </group>
-
-    <!-- Safezone-related -->
-    <group if="$(arg use_safezone)">
-        <node name="safezone" pkg="safezone" type="safezone"/>
-    </group>
-
     <!-- TFs, odom used in all operation -->
     <include file="$(find tt_start)/launch/tt_tf.launch"/>
     <!-- Robot localization node -->
     <include file="$(find tt_start)/launch/ekf.launch"/>
-    <!--<include file="$(find tt_start)/launch/scan_matcher.launch"/> TODO: debugging so disabled... -->
-    <include file="$(find tt_start)/launch/p2l_2.launch"/>
-    <!-- TODO: I do not believe that we are launching this properly (no nodelet manager), see: https://github.com/jack-oquin/velodyne_height_map/blob/master/tests/heightmap_nodelet_hz.test-->
-    <node name="height_map" pkg="velodyne_height_map" type="heightmap_node"
-          args="_height_threshold:=0.05 _full_clouds:=True _grid_dimensions:=250 _cell_size:=0.08"/>
-
+    <!-- Loam packages -->
     <include file="$(find loam_velodyne)/launch/loam_velodyne.launch"/>
+    <!-- Node to transform Loam into normal coordinate frame -->
     <include file="$(find odom_to_loam)/launch/odom_to_loam.launch"/>
+    <!-- Filters out the golf-carts footprint -->
+    <include file="$(find tt_start)/launch/robot_self_filter.launch"/>
 
     <!-- Unless we are simulating, launch sensor nodes -->
     <group unless="$(arg simulate)">
@@ -61,13 +44,7 @@
             <remap from="/velodyne_points" to="/velodyne_points_raw"/>
             <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch"/>
         </group>
-        <include file="$(find tt_start)/launch/urg_lidar.launch"/>
         <include file="$(find tt_start)/launch/vectornav.launch"/>
-        <!-- Arduinos 
-        <node pkg="rosdue" type="serial_due.py" name="due1" output="screen">
-            <param name="serial_port" value="/dev/ttyACM0"/>
-        </node> -->
-        <node pkg="rosdue" type="serial_due.py" name="due1" output="screen" args="/dev/ttyACM0"/>
     </group>
 
     <!-- If we are collecting a map (manual driving) -->
@@ -76,28 +53,12 @@
             <arg name="mapAddress" value="$(arg mapAddress)"/>
             <arg name="collectMap" value="$(arg collect_map)"/>
         </include>
-        <!-- TODO -->
-        <include file="$(find tt_start)/launch/move_base.launch">
-            <arg name="use_safezone" value="$(arg use_safezone)"/>
-        </include>
-        <node pkg="tt_drive" type="cmd_vel_to_ackermann_drive.py"
-	      name="cmd_vel_converter" output="screen"/>
-	<!-- <include file="$(find -->
-	<!-- 	       octomap_nav_server)/launch/octomap_nav_server.launch"/> -->
-        <!-- TODO -->
     </group>
 
     <!-- Unless we are collecting a map (any driving mode) -->
      <group unless="$(arg collect_map)">
-        <include file="$(find tt_start)/launch/move_base.launch">
-            <arg name="use_safezone" value="$(arg use_safezone)"/>
-        </include>
-        <node pkg="tt_drive" type="cmd_vel_to_ackermann_drive.py" name="cmd_vel_converter" output="screen"/>
-        <!-- Navigation within a static map -->
         <group if="$(arg use_static_map)">
-            <!-- Use AMCL for all SLAM packages -->
-            <!-- TODO: Confirm whether or not we need to use amcl and remove the following if not -->
-            <!-- <include file="$(find tt_start)/launch/amcl.launch"/> -->
+            <include file="$(find tt_start)/launch/amcl.launch"/>
 
             <include file="$(find tt_start)/launch/octomap.launch">
                 <arg name="mapAddress" value="$(arg mapAddress)"/>
@@ -105,9 +66,4 @@
             </include>
         </group>
     </group>
-
-    <!-- TODO:  -->
-    <include file="$(find tt_start)/launch/robot_self_filter.launch"/>
-    <include file="$(find tt_start)/launch/enet.launch"/>
-
 </launch>
