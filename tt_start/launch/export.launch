@@ -1,8 +1,0 @@
-<launch>
-   <node pkg="rosbag" type="play" name="rosbag" required="true" args="/home/rosmaster/TigerTaxi/rain.bag"/>
-   <node name="extract" pkg="image_view" type="extract_images" respawn="false" required="true" output="screen"  >
-        <remap from="image" to="/camera/image"/>
-        <param name="filename_format" type="string" value="fall_rain_rit%04d.png" />
-        <param name="sec_per_frame" type="double" value="0.5" />
-   </node>
-</launch>
