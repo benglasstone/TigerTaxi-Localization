@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="rviz" default="false"/>
+<arg name="scanPeriod" default="0.1"/>
+<arg name="imuHistorySize" default="200"/>
+<arg name="featureRegions" default="6"/>
+<arg name="curvatureRegion" default="5"/>
+<arg name="maxCornerSharp" default="2"/>
+<arg name="maxSurfaceFlat" default="4"/>
+<arg name="surfaceCurvatureThreshold" default="0.1"/>
+<arg name="lessFlatFilterSize" default="0.2"/>
+<arg name="ioRatio" default="2"/>
+<arg name="maxIterationsOdom" default="25"/>
+<arg name="deltaTAbortOdom" default="0.1"/>
+<arg name="deltaRAbortOdom" default="0.1"/>
+<arg name="maxIterationsMapping" default="10"/>
+<arg name="deltaTAbortMapping" default="0.05"/>
+<arg name="deltaRAbortMapping" default="0.05"/>
+
+<remap from="/imu/data" to="/vectornav/IMU"/> <!-- Remap the IMU to nothing. It's not in the correct coordinate system. -->
+
+<node pkg="loam_velodyne" type="multiScanRegistration" name="multiScanRegistration" output="screen">
+  <!-- === PUBLISHED TOPICS === -->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/velodyne_cloud_2" to="/velodyne_cloud_2"/>-->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/laser_cloud_sharp" to="/laser_cloud_sharp"/>-->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/laser_cloud_less_sharp" to="/laser_cloud_less_sharp"/>-->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/laser_cloud_flat" to="/laser_cloud_flat"/>-->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/laser_cloud_less_flat" to="/laser_cloud_less_flat"/>-->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/imu_trans" to="/imu_trans"/>-->
+  <!-- === SUBSCRIBED TOPICS === -->
+  <!-- MsgType: PointCloud2; MultiScanRegistration::handleCloudMessage -->
+  <remap from="/multi_scan_points"
+         to="/velodyne_points"/><!--<remap from="/multi_scan_points" to="/loam_velodyne_points"/>-->
+
+  <param name="lidar" value="VLP-16"/> <!-- options: VLP-16  HDL-32  HDL-64E -->
+  <param name="scanPeriod" value="$(arg scanPeriod)"/>
+  <param name="imuHistorySize" value="$(arg imuHistorySize)"/>
+  <param name="featureRegions" value="$(arg featureRegions)"/>
+  <param name="curvatureRegion" value="$(arg curvatureRegion)"/>
+  <param name="maxCornerSharp" value="$(arg maxCornerSharp)"/>
+  <param name="maxSurfaceFlat" value="$(arg maxSurfaceFlat)"/>
+  <param name="surfaceCurvatureThreshold" value="$(arg surfaceCurvatureThreshold)"/>
+  <param name="lessFlatFilterSize" value="$(arg lessFlatFilterSize)"/>
+  <!--<param name="minVerticalAngle" value="$(arg minVerticalAngle)" />-->
+  <!--<param name="maxVerticalAngle" value="$(arg maxVerticalAngle)" />-->
+  <!--<param name="nScanRings" value="$(arg nScanRings)" />-->
+</node>
+
+<node pkg="loam_velodyne" type="laserOdometry" name="laserOdometry" output="screen" respawn="true">
+  <!-- === PUBLISHED TOPICS === -->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/laser_cloud_corner_last" to="/laser_cloud_corner_last"/>-->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/laser_cloud_surf_last" to="/laser_cloud_surf_last"/>-->
+  <!-- MsgType: PointCloud2; frame_id: /camera -->
+  <!--<remap from="/velodyne_cloud_3" to="/velodyne_cloud_3"/>-->
+  <!-- MsgType: PoseWithCovarianceStamped; frame_id: /loam_init -->
+  <!--<remap from="/laser_odom_to_init" to="/laser_odom_to_init"/>-->
+  <!-- [LOAM OUTPUT] TODO: currently disabled...
+       MsgType: PoseWithCovarianceStamped; frame_id: /map -->
+  <!--<remap from="/laser_odom_map" to="/laser_odom_map"/>-->
+  <!-- === SUBSCRIBED TOPICS === -->
+  <!-- MsgType: PointCloud2; LaserOdometry::laserCloudSharpHandler -->
+  <!--<remap from="/laser_cloud_sharp" to="/laser_cloud_sharp"/>-->
+  <!-- MsgType: PointCloud2; LaserOdometry::laserCloudLessSharpHandler -->
+  <!--<remap from="/laser_cloud_less_sharp" to="/laser_cloud_less_sharp"/>-->
+  <!-- MsgType: PointCloud2; LaserOdometry::laserCloudFlatHandler -->
+  <!--<remap from="/laser_cloud_flat" to="/laser_cloud_flat"/>-->
+  <!-- MsgType: PointCloud2; LaserMapping::laserCloudCornerLastHandler -->
+  <!--<remap from="/laser_cloud_less_flat" to="/laser_cloud_less_flat"/>-->
+  <!-- MsgType: PointCloud2; LaserOdometry::laserCloudFullResHandler -->
+  <!--<remap from="/velodyne_cloud_2" to="/velodyne_cloud_2"/>-->
+  <!-- MsgType: PointCloud2; LaserOdometry::laserCloudFullResHandler -->
+  <!--<remap from="/imu_trans" to="/imu_trans"/>-->
+  <remap from="/loam_odom_to_odom" to="/usingEKFOutput"/>
+
+
+  <param name="scanPeriod" value="$(arg scanPeriod)"/>
+  <param name="ioRatio" value="$(arg ioRatio)"/>
+  <param name="maxIterations" value="$(arg maxIterationsOdom)"/>
+  <param name="deltaTAbort" value="$(arg deltaTAbortOdom)"/>
+  <param name="deltaRAbort" value="$(arg deltaRAbortOdom)"/>
+</node>
+
+<node pkg="loam_velodyne" type="laserMapping" name="laserMapping" output="screen">
+  <!-- === PUBLISHED TOPICS ===-->
+  <!-- [LOAM OUTPUT]
+       MsgType: PointCloud2; frame_id: /loam_init -->
+  <!--<remap from="/laser_cloud_surround" to="/laser_cloud_surround"/>-->
+  <!-- [LOAM OUTPUT]
+       MsgType: PointCloud2; Full-resolution Velodyne PointCloud; frame_id: /loam_init -->
+  <!--<remap from="/velodyne_cloud_registered" to="/velodyne_cloud_registered"/>-->
+  <!-- MsgType: Odometry; frame_id: /loam_init; child_frame_id: /aft_mapped -->
+  <!--<remap from="/aft_mapped_to_init" to="/aft_mapped_to_init"/>-->
+  <!-- === SUBSCRIBED TOPICS ===-->
+  <!-- MsgType: PointCloud2; LaserMapping::laserCloudCornerLastHandler -->
+  <!--<remap from="/laser_cloud_corner_last" to="/laser_cloud_corner_last"/>-->
+  <!-- MsgType: PointCloud2; LaserMapping::laserCloudSurfLastHandler -->
+  <!--<remap from="/laser_cloud_surf_last" to="/laser_cloud_surf_last"/>-->
+  <!-- MsgType: PoseWithCovarianceStamped; LaserMapping::laserOdometryHandler -->
+  <!--<remap from="/laser_odom_to_init" to="ekf/loam_converted_odom_gps_corrected"/>-->
+  <!-- MsgType: PointCloud2; LaserMapping::laserCloudFullResHandler; Full-resolution Velodyne PointCloud -->
+  <!--<remap from="/velodyne_cloud_3" to="/velodyne_cloud_3"/>-->
+  <remap from="/loam_odom_to_odom"
+	 to="/ekf/loam_converted_odom_gps_corrected"/>
+
+  <param name="scanPeriod" value="$(arg scanPeriod)"/>
+  <param name="maxIterations" value="$(arg maxIterationsMapping)"/>
+  <param name="deltaTAbort" value="$(arg deltaTAbortMapping)"/>
+  <param name="deltaRAbort" value="$(arg deltaRAbortMapping)"/>
+  <!--<param name="cornerFilterSize" value="$(arg cornerFilterSize)" />-->
+  <!--<param name="surfaceFilterSize" value="$(arg surfaceFilterSize)" />-->
+  <!--<param name="mapFilterSize" value="$(arg mapFilterSize)" />-->
+</node>
+
+<node pkg="loam_velodyne" type="transformMaintenance" name="transformMaintenance" output="screen">
+  <!-- === PUBLISHED TOPICS ===-->
+  <!-- [LOAM OUTPUT]
+       MsgType: PoseWithCovarianceStamped; frame_id: /loam_init -->
+  <!--<remap from="/integrated_to_init" to="/integrated_to_init"/>-->
+  <!-- [LOAM OUTPUT]
+       MsgType: PoseWithCovarianceStamped; frame_id: /odom (TODO this is sketchy) -->
+  <!--<remap from="/integrated_to_map" to="/integrated_to_map"/>-->
+  <!-- === SUBSCRIBED TOPICS ===-->
+  <!-- MsgType: PoseWithCovarianceStamped; LaserMapping::laserCloudCornerLastHandler -->
+  <!--<remap from="/laser_odom_to_init" to="/ekf/loam_converted_odom_gps_corrected"/>-->
+  <!-- MsgType: Odometry; TransformMaintenance::odomAftMappedHandler -->
+  <!--<remap from="/aft_mapped_to_init" to="/aft_mapped_to_init"/>-->
+  <!-- MsgType: Odometry; TransformMaintenance::TODO -->
+  <remap from="/loam_odom_to_odom"
+	 to="/ekf/loam_converted_odom_gps_corrected"/>
+
+</node>
+
+<group if="$(arg rviz)">
+  <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz"
+        args="-d $(find loam_velodyne)/rviz_cfg/loam_velodyne.rviz"/>
+</group>
+
+</launch>

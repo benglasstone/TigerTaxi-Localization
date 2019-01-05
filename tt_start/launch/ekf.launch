@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<launch>
+    <rosparam command="load" file="$(find tt_start)/config/ekf.yaml"/>
+    
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se_odom" clear_params="true" output="screen">
+      <remap from="odometry/filtered" to="ekf/odom"/>
+      <!--<remap from="pose_with_covariance_stamped" to="pose_with_covariance"/>-->
+      <remap from="/imu/data" to="/vectornav/IMU"/>
+    </node>
+
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se_loam_odom" clear_params="true">
+      <remap from="odometry/filtered" to="ekf/loam_odom"/>
+      <remap from="/imu/data" to="/vectornav/IMU"/>
+    </node>
+
+
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_se_gps" clear_params="true">
+      <remap from="odometry/filtered" to="ekf/odom_gps_corrected"/>
+      <remap from="/imu/data" to="/vectornav/IMU"/>
+    </node>
+
+    <!-- <node pkg="robot_localization" type="navsat_transform_node" name="loam_navsat_transform" clear_params="true" > -->
+    <!--   <remap from="odometry/filtered" to="ekf/loam_odom"/> -->
+    <!--   <remap from="odometry/gps" to="odometry/loam_gps"/> -->
+    <!--   <remap from="/gps/fix" to="/vectornav/GPS"/> -->
+    <!--   <remap from="/imu/data" to="/vectornav/IMU"/> -->
+    <!-- </node> -->
+
+
+    <!-- <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform" clear_params="true" > -->
+    <!--   <remap from="odometry/filtered" to="ekf/odom_gps_corrected"/> -->
+    <!--   <remap from="/gps/fix" to="/vectornav/GPS"/> -->
+    <!--   <remap from="/imu/data" to="/vectornav/IMU"/> -->
+    <!-- </node> -->
+</launch>

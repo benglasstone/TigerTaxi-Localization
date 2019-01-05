@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- ................................................................................ -->
+    <!-- Current Transforms -->
+
+    <!-- Camera -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="camera_broadcaster" args="1.4605 0 1.7016 0 0.5585 0 base_link camera 100"/> -->
+    <!-- Camera at ground level -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera_broadcaster"
+          args="3.92 0 0 3.14 0 0 base_link camera"/>
+
+    <!-- LiDAR - Front - No Tilt -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="1.4859 0 0.965 0 -0.03490659 0 base_link velodyne"/>
+
+    <!-- Velodyne Heightmap -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="hm_broadcaster"
+          args="1.4859 0 0 0 0 0 base_link heightmap"/>
+
+    <!-- Single Channel Hokuyo LiDAR -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="laser_broadcaster"
+          args="1.7272 0.0047625 0.235 0 0 0 base_link laser"/>
+
+    <!-- Vectornav IMU -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="imu_broadcaster"
+          args="0.2413 0 1.7653 0 0 0 base_link imu_link"/>
+
+    <!-- TODO: new stuff... -->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam"-->
+          <!--args="0 0 0 1.570795 0 1.570795 base_link loam"/>-->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam_odom"-->
+          <!--args="0 0 0 1.570795 0 1.570795 base_link loam_odom"/>-->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam_mapped"-->
+          <!--args="0 0 0 1.570795 0 1.570795 base_link loam_mapped"/>-->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam"-->
+          <!--args="0 0 0 0 0 0 base_link loam"/>-->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam_odom"-->
+          <!--args="0 0 0 0 0 0 base_link loam_odom"/>-->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam_mapped"-->
+          <!--args="0 0 0 0 0 0 base_link loam_mapped"/>-->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam"
+          args="1.4859 0 0.965 0 0 0 base_link loam"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam_odom"
+          args="1.4859 0 0.965 0 0 0 base_link loam_odom"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_loam_mapped"
+          args="1.4859 0 0.965 0 0 0 base_link loam_mapped"/>
+
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="this_is_a_terrible_idea"-->
+          <!--args="0 0 0 0 0 0 odom base_link"/>-->
+
+    <!-- ** loam_velodyne has a non-standard coordinate system, so we need to transform it to be ROS compliant ** -->
+    <!-- loam_init is like a map frame. The vehicle is measured relative to this. -->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="loam_init_to_odom" args="-1.4859 0 0.965 1.570795 0.174533 1.570795 odom loam_init" />-->
+
+    <!-- NOTE: Don't add velodyne pitch inverse TF here -->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="loam_init_to_odom"-->
+          <!--args="0 0 0 1.570795 0 1.570795 odom loam_init"/>-->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="loam_init_to_odom" TODO old car_loc stuff... -->
+          <!--args="1.4859 0 0.965 1.570795 0 1.570795 odom loam_init"/>-->
+
+    <!-- loam is a moving frame, positioned on the LIDAR-->
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="velodyne_to_loam" args="-1.4859 0 -0.964 -1.570795 0 -1.570795 velodyne loam" />-->
+
+    <!-- ................................................................................ -->
+    <!-- Old Transforms -->
+
+    <!-- IMU  -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="baselink_imu_broadcaster"
+          args="1.2 0 1.8288 3.14159 0 0 base_link base_imu_link 100" /> -->
+
+    <!-- LiDAR - Front - 10 degree Tilt Forward-->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="0 0 0.965 0 0.17453 0 base_link velodyne 100" />
+    -->
+
+    <!-- LiDAR - Front - 7.5 degree Tilt Forward-->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="0 0 0.965 0 0.1309 0 base_link velodyne 100" />
+    -->
+
+    <!-- LiDAR - Top -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="0.6096 0 1.83515 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- ................................................................................ -->
+    <!-- LiDAR Testing -->
+
+    <!-- Transform with tilt-->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.4859 0 0.965 0 0.1396 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.4859 0 0.965 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt, one cinder block height -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="1.7272 0 0.235 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt, two cinder block height -->
+    <!-- This one reduces false ground line scan classification -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+    	  args="1.7272 0 0.410 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- This one is the height for the middle of the 16 channel LiDAR -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="1.7272 0 0.432 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- Transform without tilt, two cinder block height -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="velodyne_broadcaster"
+          args="1.7272 0 0.622 0 0 0 base_link velodyne 100" />
+    -->
+
+    <!-- ................................................................................ -->
+    <!-- Other Transforms -->
+
+    <!-- Velodyne Raw Data Transform -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="vel_tf_broadcaster"
+          args="1.4859 0 0.965 0 0 0 base_link vel_tf 100"/>
+    -->
+
+</launch>

@@ -1,0 +1,66 @@
+#use_rgb:         False
+##keep_organized:  True
+#subsample_value: 0.0
+#min_sensor_dist: 2
+#invert:          False
+## TODO: Zach
+##sensor_frame:    velodyne
+#
+#self_see_default_padding: 0.01
+#self_see_default_scale:   1.0
+#self_see_links:
+##- name: base_link
+##- name: velodyne
+#- name: front_left_low_link
+#- name: front_right_low_link
+#- name: rear_left_low_link
+#- name: rear_right_low_link
+#- name: front_left_high_link
+#- name: front_right_high_link
+#- name: rear_left_high_link
+#- name: rear_right_high_link
+
+# https://github.com/ros-perception/perception_pcl/blob/jade-devel/pcl_ros/cfg/CropBox.cfg
+# [[1.9384, -0.6096], [1.9384, 0.6096], [-0.5, 0.6096], [-0.5, -0.6096]]
+#min_x: -0.52
+#max_x: 1.95
+#min_y: -0.62
+#max_y: 0.62
+#min_z: 0
+#max_z: 1.78
+passthrough:
+#  min_x: -0.52
+#  max_x: 1.95
+#  min_y: -0.62
+#  max_y: 0.62
+#  min_z: 0
+#  max_z: 1.78
+#  min_x: -1.5
+#  max_x: 1
+#  min_y: -1
+#  max_y: 1
+#  min_z: -1
+#  max_z: 1
+  min_x: -2.0059
+#  max_x: 1
+  max_x: .4641
+#  min_y: -1
+#  max_y: 1
+  min_y: -0.7
+  max_y: 0.7
+#  min_z: -1
+#  max_z: 1
+  min_z: -0.965
+  max_z: 0.815
+  # NOTE: Use these values if there is no offset to base_link (or if we don't use base_link, e.g. loam_velodyne/aft_mapped...)
+  #min_x: -0.52
+  #max_x: 1.95
+  #min_y: -0.62
+  #max_y: 0.62
+  #min_z: 0
+  #max_z: 1.78
+  keep_organized: True
+  negative: True
+
+#input_frame
+#output_frame

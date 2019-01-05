@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+    <rosparam command="load" file="$(find
+				   tt_start)/config/robot_self_filter.yaml"/>
+
+    <node pkg="nodelet" type="nodelet" name="pcl_manager"
+	  args="manager" output="screen"/>
+
+    <!-- Run a passthrough filter to clean NaNs -->
+    <node pkg="nodelet" type="nodelet" name="passthrough" args="load
+								pcl/CropBox
+								pcl_manager"
+	  clear_params="true" output="screen">
+        <remap from="~input" to="/velodyne_points_raw"/>
+        <remap from="~output" to="/velodyne_points"/>
+    </node>
+
+    <!--<node pkg="nodelet" type="nodelet" name="groundFiltering" args="load pcl/SACSegmentation pcl_manager" output="screen">-->
+        <!--<remap from="~input" to="/passthrough_velodyne_points"/>-->
+        <!--<remap from="~output" to="/velodyne_points"/>-->
+    <!--</node>-->
+</launch>
+
+<!--<launch>-->
+<!--<node pkg="robot_self_filter" type="self_filter" clear_params="true" name="self_filter" respawn="true"-->
+<!--output="screen">-->
+<!--<remap from="cloud_in" to="/velodyne_points_raw"/>-->
+<!--<remap from="cloud_out" to="/velodyne_points"/>-->
+
+<!--<rosparam command="load" file="$(find tt_start)/config/robot_self_filter.yaml"/>-->
+<!--</node>-->
+<!--</launch>-->

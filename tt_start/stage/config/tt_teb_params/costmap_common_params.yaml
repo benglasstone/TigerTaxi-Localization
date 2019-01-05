@@ -1,0 +1,64 @@
+obstacle_range: 2.5
+#max_obstacle_height: 2.0
+raytrace_range: 2.8
+
+#4'x8' => 1.2192m x 2.4384m 
+#         0.6096m     1.2192m
+#footprint: [[-0.6096, 1.2192], [0.6096, 1.2192], [0.6096, -1.2192],  [-0.6096, -1.2192]]
+footprint: [[1.9384, -0.6096], [1.9384, 0.6096], [-0.5, 0.6096], [-0.5, -0.6096]]
+#footprint_padding: 0.01
+
+#robot_radius: ir_of_robot
+#inflation_radius: 0.5
+#cost_scaling_factor: 10.0
+
+transform_tolerance: 0.5
+
+##The cost at which a cell is considered an obstacle when a map is read from the map_server
+#lethal_cost_threshold: 100
+
+plugins:
+- {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+- {name: obstacle_layer,  type: "costmap_2d::ObstacleLayer"}
+
+# TODO remove this?
+inflation_layer:
+  enabled:             False
+  cost_scaling_factor: 0.1    # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius:    0.5    # max. distance from an obstacle at which costs are incurred for planning paths.
+
+# **NOTE: These have been moved to obstacle_layer_common_[no_]safezone.yaml with a switch in move_base.launch
+#obstacle_layer:
+#  enabled:             True
+#  observation_sources: unsafe_zone safe_zone velodyne_obstacles velodyne_clear laser_scan_sensor
+#  unsafe_zone:         {sensor_frame: camera,    data_type: PointCloud2, topic: unsafezone_pc,      marking: True,  clearing: True}
+#  safe_zone:           {sensor_frame: camera,    data_type: PointCloud2, topic: safezone_pc,        marking: False, clearing: True}
+#  velodyne_obstacles:  {sensor_frame: heightmap, data_type: PointCloud2, topic: velodyne_obstacles, marking: True,  clearing: True}
+#  velodyne_clear:      {sensor_frame: heightmap, data_type: PointCloud2, topic: velodyne_clear,     marking: False, clearing: True}
+#  laser_scan_sensor:   {sensor_frame: laser,     data_type: LaserScan,   topic: scan,               marking: True,  clearing: True}
+##  observation_sources: velodyne_obstacles velodyne_clear laser_scan_sensor
+##  velodyne_obstacles:  {sensor_frame: heightmap, data_type: PointCloud2, topic: velodyne_obstacles, marking: True,  clearing: True}
+##  velodyne_clear:      {sensor_frame: heightmap, data_type: PointCloud2, topic: velodyne_clear,     marking: False, clearing: True}
+##  laser_scan_sensor:   {sensor_frame: laser,     data_type: LaserScan,   topic: scan,               marking: True,  clearing: True}
+#
+#  combination_method:         1
+#  footprint_clearing_enabled: True # Don't mark things as obstacles if they're in footprint range
+#  raytrace_range:             10.0
+#  obstacle_range:             8.0
+
+#observation_sources: scan point_cloud_sensor
+#scan: {data_type: LaserScan, expected_update_rate: 0.4,
+#       observation_persistence: 0.0, marking: true, clearing: true, max_obstacle_height: 0.4, min_obstacle_height: 0.08}
+#point_cloud_sensor: {sensor_frame: velodyne, data_type: PointCloud2, topic: ground_object_cloud, marking: false, clearing: false}
+# TODO: This is not a full config for mono-channel LiDAR...
+#laser_scan_sensor: {sensor_frame: frame_name, data_type: LaserScan, topic: topic_name, marking: true, clearing: true}
+
+##For this example we'll configure the costmap in voxel-grid mode
+#map_type: voxel
+#
+##Voxel grid specific parameters
+#origin_z: 0.0
+#z_resolution: 0.2
+#z_voxels: 10
+#unknown_threshold: 9
+#mark_threshold: 0

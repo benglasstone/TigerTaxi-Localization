@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="mapAddress"/>
+    <arg name="collectMap"/>
+
+    <remap from="/projected_map" to="/map"/>
+    <remap from="/cloud_in" to="/velodyne_points"/>
+
+    <group unless="$(arg collectMap)">
+        <node pkg="octomap_server" type="octomap_server_node" name="octomap_server" args="$(arg mapAddress)">
+            <!-- data source to integrate (PointCloud2) -->
+            <!--<remap from="cloud_in" to="/laser_cloud_surround"/>-->
+            <!--<remap from="cloud_in" to="/velodyne_cloud_registered"/>-->
+            <!--<remap from="cloud_in" to="/velodyne_cloud_registered_baselink"/>-->
+
+            <param name="resolution" value="0.1"/>
+
+            <!--<param name="frame_id" value="odom"/>-->
+            <param name="frame_id" value="map"/>
+            <param name="base_frame_id" value="base_link"/>
+
+            <param name="height_map" value="true"/>
+            <param name="latch" value="false"/>
+
+            <!-- maximum range to integrate (speedup!) -->
+            <param name="sensor_model/max_range" value="15.0"/>
+
+            <param name="filter_speckles" value="true"/>
+
+            <!-- Filter ground obstacles -->
+            <param name="filter_ground" value="true"/>
+            <param name="ground_filter/distance" value="0.965"/>
+            <param name="ground_filter/plane_distance" value="0.2"/>
+            <param name="pointcloud_min_z" value="-0"/>
+            <param name="pointcloud_max_z" value="0"/>
+            <param name="occupancy_min_z" value="0"/>
+            <param name="occupancy_max_z" value="2.5"/>
+        </node>
+    </group>
+    <group if="$(arg collectMap)">
+        <node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+            <!-- data source to integrate (PointCloud2) -->
+            <!--<remap from="cloud_in" to="/laser_cloud_surround"/>-->
+            <!--<remap from="cloud_in" to="/velodyne_cloud_registered"/>-->
+            <!--<remap from="cloud_in" to="/velodyne_cloud_registered_baselink"/>-->
+
+            <param name="resolution" value="0.1"/>
+            <!--<param name="frame_id" value="odom"/>-->
+            <param name="frame_id" value="map"/>
+            <param name="base_frame_id" value="base_link"/>
+
+            <param name="height_map" value="true"/>
+            <param name="latch" value="false"/>
+
+            <!-- maximum range to integrate (speedup!) -->
+            <param name="sensor_model/max_range" value="10.0"/>
+
+            <param name="filter_speckles" value="true"/>
+
+            <!-- Filter ground obstacles -->
+            <param name="filter_ground" value="true"/>
+            <param name="ground_filter/distance" value="0.965"/>
+            <param name="ground_filter/plane_distance" value="0.2"/>
+	    <param name="ground_filter/angle" value="1"/>
+            <param name="pointcloud_min_z" value="-10"/>
+            <param name="pointcloud_max_z" value="10"/>
+            <param name="occupancy_min_z" value="0.25"/>
+            <param name="occupancy_max_z" value="2.5"/>
+	    </node>
+    </group>
+</launch>

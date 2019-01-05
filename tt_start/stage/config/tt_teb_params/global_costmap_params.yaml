@@ -1,0 +1,27 @@
+global_costmap:
+  global_frame:     /map
+  robot_base_frame: base_link
+
+  update_frequency:  5.0
+  publish_frequency: 0.0
+
+  # footprint_padding: 0.02
+
+  # ===========================
+  # NOTE: ONLY change this section using use_static_map parameter in tt_start.launch (see bottom of move_base.launch)
+  # ===========================
+  # = OPTION 1: Use static map =
+  # static_map: True
+  # rolling_window: False
+  # origin_x:   0.0
+  # origin_y:   0.0
+  # = OPTION 2: Live SLAM map  =TODO
+#  static_map: False
+  width:      40.0
+  height:     40.0
+  origin_x:   13.0
+  origin_y:   23.0
+  static_map:        True
+  rolling_window:    False
+  footprint_padding: 0.05
+  # ===========================TODO
